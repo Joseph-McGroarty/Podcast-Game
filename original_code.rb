@@ -79,12 +79,12 @@ class Player
     @score = 0
   end
 
-  def display_hand
-    puts "#{name}'s Cards:"
-    hand.each do |key, card|
-      puts "#{key} : #{card}"
-    end
-  end
+  #def display_hand
+    #puts "#{name}'s Cards:"
+    #hand.each do |key, card|
+      #puts "#{key} : #{card}"
+    #end
+  #end
 
   def redeam_card(key)
     begin
@@ -133,14 +133,21 @@ class Game
     puts "This is the Gal Pals Podcast Cardgame." # write better intro
   end
 
+  def display_hand(player)
+    puts "#{player.name}'s Cards:"
+    player.hand.each do |key, card|
+      puts "#{key} : #{card}"
+    end
+  end
+
   def display_scores
     puts "Current scores: #{player1.name}: #{player1.score}, #{player2.name}: #{player2.score}"
   end
 
   def display_hands
-    player1.display_hand
+    display_hand(player1)
     display_divider
-    player2.display_hand
+    display_hand(player2)
   end
 
   def display_divider
