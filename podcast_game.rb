@@ -3,5 +3,17 @@ require "sinatra/reloader" if development?
 require "tilt/erubis"
 
 get '/' do
-  'Hello world!'
+  erb :home
+end
+
+get '/play' do
+  erb :play
+end
+
+get '/rules' do
+  erb :rules
+end
+
+get '/endgame' do
+  erb :endgame
 end
