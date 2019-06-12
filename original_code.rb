@@ -79,13 +79,6 @@ class Player
     @score = 0
   end
 
-  #def display_hand
-    #puts "#{name}'s Cards:"
-    #hand.each do |key, card|
-      #puts "#{key} : #{card}"
-    #end
-  #end
-
   def redeam_card(key)
     begin
       @score += hand[key].point_value
@@ -98,7 +91,7 @@ class Player
   end
 end
 
-class Game
+class CommandLineGame
   attr_accessor :player1, :player2, :deck
   def initialize
     @player1 = Player.new('One')
@@ -200,5 +193,101 @@ class Game
   end
 end
 
-game = Game.new
+class BrowserGame
+  attr_accessor :player1, :player2, :deck
+  def initialize
+    @player1 = Player.new('One')
+    @player2 = Player.new('Two')
+    @deck = Deck.new
+    @user_ended_game = nil
+
+    deal_full_new_hand(player1.hand)
+    deal_full_new_hand(player2.hand)
+  end
+
+  def play
+    display_welcome_message
+    loop do
+      display_scores
+      display_hands
+      user_takes_turn #prompt user for move. case statement when (end of game string) change user_ended_game? to true actually prob a guard clause for that. then split string into parts and eval
+      break if user_ended_game? || (player1.hand_is_empty? && player2.hand_is_empty?)# user enters a particular string or both hands are empty. write deal so hands are only empty here if deck is empty.
+    end
+    display_results
+    display_goodbye_message
+  end
+
+  def deal_full_new_hand(hand)
+    hand.keys.each do |key|
+      deck.deal_to(hand, key)
+    end
+  end
+
+  def display_welcome_message
+    puts "*Cold open references the cold open*"
+    puts "This is the Gal Pals Podcast Cardgame." # write better intro
+  end
+
+  def display_hand(player)
+    puts "#{player.name}'s Cards:"
+    player.hand.each do |key, card|
+      puts "#{key} : #{card}"
+    end
+  end
+
+  def display_scores
+    puts "Current scores: #{player1.name}: #{player1.score}, #{player2.name}: #{player2.score}"
+  end
+
+  def display_hands
+    display_hand(player1)
+    display_hand(player2)
+  end
+
+
+  def user_takes_turn
+    commands = nil
+    loop do
+      puts "enter a command" # placeholder prompt
+      commands = gets.chomp.downcase.split(' ')
+      break if ((commands[0] == '1' || commands[0] == '2') && player1.hand.keys.include?(commands[1])) || commands[0] == 'stop'
+      puts "invalid input, try again."
+    end
+
+    case commands[0]
+    when '1'
+      player1.redeam_card(commands[1])
+      deck.deal_to(player1.hand, commands[1])
+    when '2'
+      player2.redeam_card(commands[1])
+      deck.deal_to(player2.hand, commands[1])
+    when 'stop'
+      @user_ended_game = true
+    end
+  end
+
+  def user_ended_game?
+    !!@user_ended_game
+  end
+
+  def display_results
+    puts "Final Scores:"
+    puts "#{player1.name}: #{player1.score}"
+    puts "#{player2.name}: #{player2.score}"
+
+    if player1.score > player2.score
+      puts "#{player1.name} wins!"
+    elsif  player1.score < player2.score
+      puts "#{player2.name} wins!"
+    else
+      puts "It's a tie!"
+    end
+  end
+
+  def display_goodbye_message
+    puts "Goodbye."
+  end
+end
+
+game = BrowserGame.new
 game.play
