@@ -1,6 +1,14 @@
 <h1>Gal Pals Podcast Game</h1>
-<h3>Player 1: <%=@player1.score%></h3>
-<ul>
-	<li><%=@player1.hand['1']%></li>
-</ul>
+<h3><%=@player1.name%>: <%=@player1.score%></h3>
+<%@player1.hand.each do |position, card|%>
+	<form action="/redeemcard/1/<%=position%>" method="post">
+		<input type="submit" value="<%=card%>">
+	</form>
+<%end%>
+<h3><%=@player2.name%>: <%=@player2.score%></h3>
+<%@player2.hand.each do |position, card|%>
+	<form action="/redeemcard/2/<%=position%>" method="post">
+		<input type="submit" value="<%=card%>">
+	</form>
+<%end%>
 <a href="/endgame">End Game</a>

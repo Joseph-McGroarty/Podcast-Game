@@ -22,18 +22,42 @@ post '/newgame' do
   session[:deck] = Deck.new
 
   # deal cards to give each player full hand
+  def deal_full_hand(player)
+    # get array of player's hand keys, deal a card to each position key
+    player.hand.keys.each do |position|
+      session[:deck].deal_to(player.hand, position)
+    end
+  end
+
+  deal_full_hand(session[:player1])
+  deal_full_hand(session[:player2])
+
   # redirect to get '/play'
   redirect "/play"
 end
 
 # turn in a card, increment player score, deal new card, redirect to play
-post '/redeemcard/:number' do # double check :number syntax is right
-  # possibly make it '/redeemcard/:player/:number'
-  # parse any input necessary to know what player redeemed a card
+post '/redeemcard/:player/:number' do 
+  # parse any necessary to know what player redeemed which card
+  redeeming_player = nil
+
+  if params[:player] == '1'
+    redeeming_player = session[:player1]
+  elsif params[:player] == '2'
+    redeeming_player = session[:player2]
+  end
+
+  redeemed_card = redeeming_player.hand[params[:number]]
+
   # increment that player's score by the point value of the card
-  # remove redeemed card from player's hand
-  # unless deck is empty, deal player a new card in the now empty slot
+
+  redeeming_player.score += redeemed_card.point_value
+
+  # deal player a new card in redeemed slot
+  session[:deck].deal_to(redeeming_player.hand, params[:number])
+
   # redirect to get '/play'
+  redirect "/play"
 end
 
 # show the current game state with links for user to make plays
@@ -50,5 +74,18 @@ end
 
 # determine winner, show results
 get '/endgame' do
+  @player1 = session[:player1]
+  @player2 = session[:player2]
+  @result_message = nil
+
+  #determine winner and update @result_message accordingly
+  if @player1.score > @player2.score
+    @result_message = "#{@player1.name} wins!"
+  elsif @player1.score < @player2.score
+    @result_message = "#{@player2.name} wins!"
+  elsif @player1.score == @player2.score
+    @result_message = "It's a tie!"
+  end
+
   erb :endgame
 end

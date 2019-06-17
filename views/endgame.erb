@@ -1,4 +1,8 @@
 <h1>Game Over!</h1>
-<h2>Anounce Winner (this is placeholder text)</h2>
+<h2><%=@result_message%></h2>
+<h3><%=@player1.name%>: <%=@player1.score%></h3>
+<h3><%=@player2.name%>: <%=@player2.score%></h3>
 <a href="/">Back to Home</a>
-<a href="/newgame">New Game</a>
+<form action="/newgame" method="post">
+  <button type="submit">New Game</button>
+</form>
